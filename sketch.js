@@ -23,7 +23,7 @@ let timeForward5Mins,timeForward30Mins,timeForward5Hours,timeForward1Day,timeFor
 const options = {
   lat: 39.097242, //Initial Longitude Center
   lng: -94.583308, //Initial Latitude Center
-  zoom: 19, //Initial Zoom Factor
+  zoom: 17, //Initial Zoom Factor
   //maxNativeZoom: 22,
   studio: true,
   //style: 'mapbox://styles/mapbox/traffic-night-v2',
@@ -129,7 +129,7 @@ function windowResized() {
     w = window.innerWidth;
     h = window.innerHeight;
     resizeCanvas(w, h);
-    
+
   }
 
 
