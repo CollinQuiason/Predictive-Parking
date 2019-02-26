@@ -1,0 +1,16 @@
+html, body { 
+    position:relative; 
+    text-align:center;
+    padding: 0; 
+    margin: 0; 
+    overflow-x:hidden;
+  }
+  html {
+    overflow:   scroll;
+    padding:0;
+    margin:0;
+  }
+  ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent; /* make scrollbar transparent */
+  }
