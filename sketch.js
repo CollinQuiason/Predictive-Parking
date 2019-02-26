@@ -16,6 +16,7 @@ let pos;
 let timeText;
 
 //GUI declaration 
+let transparencyValue;
 let timeBack1Month, timeBack1Day,timeBack5Hours,timeBack30Mins,timeBack5Mins;
 let timeForward5Mins,timeForward30Mins,timeForward5Hours,timeForward1Day,timeForward1Month;
 
@@ -54,6 +55,8 @@ function setup(){
 
   //GUI
     //Setup
+  transparencyValue = createSlider(0, 100, 60);
+  transparencyValue.position(0,0);
   timeBack1Month = createButton('<< 1 Month');
   timeBack1Day = createButton('<< 1 Day');
   timeBack5Hours = createButton('<< 5 Hours');
@@ -65,10 +68,12 @@ function setup(){
   timeForward5Hours = createButton('5 Hours >>');
   timeForward1Day = createButton('1 Day >>');
   timeForward1Month = createButton('1 Month >>');
+
   //timeSlider = createSlider(0, 2, 1);
 
     //Interaction
   timeText.changed(textChangeEvent);
+  transparencyValue.changed(drawCars);
   timeBack1Month.mousePressed(back1month);
   timeBack1Day.mousePressed(back1day);
   timeBack5Hours.mousePressed(back5hour);
@@ -94,6 +99,40 @@ function draw(){
 //Overlay map with 'parking-polygons'
 function drawCars(){
   clear(); //Clear all existing polygons from the last frame
+
+  //Visual Key (text for visual key is coded after cars are visualized, so that text overlays ontop of cars)
+
+  fill(102, 153, 255, transparencyValue.value()); //RGB value for polygons and key (red, green, blue, transparency)   values ε (0, 255)
+
+  square(width-40, height/2, 40); //1 overlap
+
+  square(width-40, height/2-40, 40); //2 overlaps
+  square(width-40, height/2-40, 40);
+  
+  square(width-40, height/2-80, 40); //3 Overlaps
+  square(width-40, height/2-80, 40);
+  square(width-40, height/2-80, 40);
+
+  square(width-40, height/2-120, 40); //4 Overlaps
+  square(width-40, height/2-120, 40);
+  square(width-40, height/2-120, 40);
+  square(width-40, height/2-120, 40);
+
+  square(width-40, height/2-160, 40); //5 Overlaps
+  square(width-40, height/2-160, 40);
+  square(width-40, height/2-160, 40);
+  square(width-40, height/2-160, 40);
+  square(width-40, height/2-160, 40);
+  
+  square(width-40, height/2-200, 40); //6 Overlaps
+  square(width-40, height/2-200, 40);
+  square(width-40, height/2-200, 40);
+  square(width-40, height/2-200, 40);
+  square(width-40, height/2-200, 40);
+  square(width-40, height/2-200, 40);
+
+  
+
   for(var i = 0; i < data.getRowCount(); i++){
   //for(var i = 0; i < data.getRowCount()/4; i++){ //For rendering a subset of the data (Heavy bias in data selection due to the way that data is somewhat pre-sorted. For debugging purposes only)
     currentRow = data.getRow(i); //Iterate through all rows
@@ -102,7 +141,7 @@ function drawCars(){
     if(startTime < timeSelection && endTime > timeSelection){ //For each row, see if parking duration matches the time selection
       var geometryString = currentRow.getString('geometry'); //Input polygon coordinates
       var coords = geometryString.split(','); //Split coordinates with delimiter ','
-      fill(102, 153, 255, 60); //RGB value for polygon (red, green, blue, transparency)   values ε (0, 255)
+      
       beginShape();  //Every vertex(x, y) call marks a corner of the polygon
       let xy;
       xy = areaMap.latLngToPixel(float(coords[1]), float(coords[0]));  //Convert lat/longitude coordinates into corresponding pixel coordinates
@@ -118,6 +157,17 @@ function drawCars(){
       endShape(CLOSE); //Close the shape and fill (Should already be taken care of because vertex 0 == vertex 4 according to the data set)
     }
   }
+
+  //Visual Key Text
+  fill(255);
+
+  textAlign(RIGHT);
+  text('1 Overlap', width-45, height/2+25);
+  text('2 Overlaps', width-45, height/2-15);
+  text('3 Overlaps', width-45, height/2-55);
+  text('4 Overlaps', width-45, height/2-95);
+  text('5 Overlaps', width-45, height/2-135);
+  text('6+ Overlaps', width-45, height/2-175);
 }
 
 
