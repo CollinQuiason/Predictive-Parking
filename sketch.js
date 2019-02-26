@@ -129,6 +129,7 @@ function windowResized() {
     w = window.innerWidth;
     h = window.innerHeight;
     resizeCanvas(w, h);
+    
   }
 
 
