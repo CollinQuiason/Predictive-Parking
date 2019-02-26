@@ -26,5 +26,5 @@ Slider located on top left for changing transparency (Updated visualization on m
 
 ##  **NOTES/WARNINGS:**
 
-WILL NOT LOAD WITHOUT BEING RUN ON A SERVER
+WILL NOT LOAD WITHOUT BEING RAN ON A SERVER
 
