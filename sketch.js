@@ -2,63 +2,58 @@
 //University of Missouri-Kansas City
 //Febuary 22, 2019
 
+        ///////////////////////////////////////////////////////////
+        //DO NOT DELETE - REFERENCE FOR HOW TO GET VALUE FROM CSV//
+        //data.getRow(1000).getString('start_time');             //
+        ///////////////////////////////////////////////////////////
+
+//Data
 var mappa;
 var parkingEvents = [];
 var timeSelection;
 let data;
-let timeSlider;
 let pos;
-let c1;
-let c2;
-let c3;
-let c4;
-let c5;
 let timeText;
+
+//GUI declaration 
 let timeBack1Month, timeBack1Day,timeBack5Hours,timeBack30Mins,timeBack5Mins;
 let timeForward5Mins,timeForward30Mins,timeForward5Hours,timeForward1Day,timeForward1Month;
 
+//Mappa API configuration
 const options = {
   lat: 39.097242, //Initial Longitude Center
   lng: -94.583308, //Initial Latitude Center
-  zoom: 19,
+  zoom: 19, //Initial Zoom Factor
   //maxNativeZoom: 22,
   studio: true,
   //style: 'mapbox://styles/mapbox/traffic-night-v2',
   style: 'mapbox://styles/mapbox/dark-v9',
 };
 
-
-  //DO NOT DELETE - REFERENCE FOR HOW TO GET VALUE FROM CSV
-  //data.getRow(1000).getString('start_time');
-
+//Called before HTML5 canvas loads
 function preload(){
-    //TODO: Read in all parking events
     data = loadTable('/MainstParking/cleanedParking.csv', 'csv', 'header');
-    //TODO: Sort via parking time (Might be pre-processed)
-    
-
+    //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 
+//Called after HTML5 canvas loads
 function setup(){
-    //Canvas
+  //Canvas setup
   h = window.innerHeight;
   w = window.innerWidth;
   canvas = createCanvas(w, h);
-
   
-  
-
+  //API Call(s)
   //mappa = new Mappa('Google', 'AIzaSyAjAzuR4SDDwDHTaEbdWmtrgeDQvm3HUdQ');
   mappa = new Mappa('MapboxGL', 'pk.eyJ1IjoiY3lmdXJpeCIsImEiOiJjanNpaXQ2NnAwa2ZiM3lyN3A1YmZiNm1jIn0.w1r76syKPFLN-qsnp7Tmkw');
 
-
-  //background(0);
+  //Initialize map
   areaMap = mappa.tileMap(options);
   areaMap.overlay(canvas);
   areaMap.onChange(drawCars);
 
   //GUI
-  //timeSlider = createSlider(0, 2, 1);
+    //Setup
   timeBack1Month = createButton('<< 1 Month');
   timeBack1Day = createButton('<< 1 Day');
   timeBack5Hours = createButton('<< 5 Hours');
@@ -70,8 +65,9 @@ function setup(){
   timeForward5Hours = createButton('5 Hours >>');
   timeForward1Day = createButton('1 Day >>');
   timeForward1Month = createButton('1 Month >>');
+  //timeSlider = createSlider(0, 2, 1);
 
-
+    //Interaction
   timeText.changed(textChangeEvent);
   timeBack1Month.mousePressed(back1month);
   timeBack1Day.mousePressed(back1day);
@@ -84,32 +80,33 @@ function setup(){
   timeForward1Day.mousePressed(forward1day);
   timeForward1Month.mousePressed(forward1month);
 
-
-
+  //Set time to the preset GUI value
   timeSelection = new Date(timeText.value());
   
 }
 
+//Called every frame
 function draw(){
   
 
 }
 
+//Overlay map with 'parking-polygons'
 function drawCars(){
-  clear();
+  clear(); //Clear all existing polygons from the last frame
   for(var i = 0; i < data.getRowCount(); i++){
-  //for(var i = 0; i < 80; i++){
-    currentRow = data.getRow(i);
-    var startTime = new Date(currentRow.getString('start_time'));
+  //for(var i = 0; i < data.getRowCount()/4; i++){ //For rendering a subset of the data (Heavy bias in data selection due to the way that data is somewhat pre-sorted. For debugging purposes only)
+    currentRow = data.getRow(i); //Iterate through all rows
+    var startTime = new Date(currentRow.getString('start_time')); //Create date objects for start and end time
     var endTime = new Date(currentRow.getString('end_time'));
-    if(startTime < timeSelection && endTime > timeSelection){
-      var geometryString = currentRow.getString('geometry');
-      var coords = geometryString.split(',');
-      fill(102, 153, 255, 60);
-      beginShape();
+    if(startTime < timeSelection && endTime > timeSelection){ //For each row, see if parking duration matches the time selection
+      var geometryString = currentRow.getString('geometry'); //Input polygon coordinates
+      var coords = geometryString.split(','); //Split coordinates with delimiter ','
+      fill(102, 153, 255, 60); //RGB value for polygon (red, green, blue, transparency)   values ε (0, 255)
+      beginShape();  //Every vertex(x, y) call marks a corner of the polygon
       let xy;
-      xy = areaMap.latLngToPixel(float(coords[1]), float(coords[0]));
-      vertex(xy.x, xy.y);
+      xy = areaMap.latLngToPixel(float(coords[1]), float(coords[0]));  //Convert lat/longitude coordinates into corresponding pixel coordinates
+      vertex(xy.x, xy.y); //Draw pixel at found x and y location (top of screen y = 0, left of screen x = 0; down and right increase these values respectively)
       xy = areaMap.latLngToPixel(float(coords[3]), float(coords[2]));
       vertex(xy.x, xy.y);
       xy = areaMap.latLngToPixel(float(coords[5]), float(coords[4]));
@@ -118,7 +115,7 @@ function drawCars(){
       vertex(xy.x, xy.y);
       xy = areaMap.latLngToPixel(float(coords[9]), float(coords[8]));
       vertex(xy.x, xy.y);
-      endShape(CLOSE);
+      endShape(CLOSE); //Close the shape and fill (Should already be taken care of because vertex 0 == vertex 4 according to the data set)
     }
   }
 }
@@ -126,22 +123,20 @@ function drawCars(){
 
 
 
-
+//Adaptively resize window
 function windowResized() {
+  //TODO: resize map as well
     w = window.innerWidth;
     h = window.innerHeight;
     resizeCanvas(w, h);
   }
-/*
-function isWithinTimeBounds(selectedTime, carStart, carEnd){
-    if (carStart)
-}*/
 
+
+//GUI Interaction functions (Values are multiplied by 60,000 to recieve a minute value)
 function textChangeEvent(){
   timeSelection = new Date(timeText.value());
-  drawCars();
+  drawCars(); //Redraw cars
 }
-
 function back5min(){
   timeSelection = new Date(timeSelection.getTime() - 5*60000)
   timeText.value(timeSelection);
