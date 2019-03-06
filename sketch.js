@@ -27,7 +27,7 @@ const options = {
   zoom: 17, //Initial Zoom Factor
   //maxNativeZoom: 22,
   studio: true,
-  //style: 'mapbox://styles/mapbox/traffic-night-v2',
+  //style: 'mapbox://styles/mapbox/satellite-v9',
   style: 'mapbox://styles/mapbox/dark-v9',
 };
 
