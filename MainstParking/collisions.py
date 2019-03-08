@@ -7,6 +7,7 @@ timeSelection = datetime.strptime('2018-08-23 23:54:29', '%Y-%m-%d %H:%M:%S')  #
 print("Reading in values from \'cleanedParking.csv\'...")
 parking = pandas.read_csv('cleanedParking.csv')
 print(list(parking))
+overlapMatrix = []
 
 def isSortedAscending(arr):
 	cur = arr[0]
@@ -93,9 +94,9 @@ for event in data[1]:
 
 print("Calculating intersections...")
 for idx, sensor in enumerate(data): #For every sensor
-	print('************************************')
-	print("Currently working on sensor: " + idx)
-	print('************************************')
+	print("************************************")
+	print("Currently working on sensor: " + str(idx))
+	print("************************************")
 	for i in range(0, len(sensor)): #For every event in a sensor
 		for j in range(i+1, len(sensor)): #For every other event in a sensor (permutation)
 			if (sensor[i][1] < timeSelection and sensor[i][2] > timeSelection): #If first compared is parked during timeSelection
