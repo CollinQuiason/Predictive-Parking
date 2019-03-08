@@ -92,16 +92,27 @@ for event in data[1]:
 	dates.append(event[1])
 
 
+overlapMatrix.append([])
+
 print("Calculating intersections...")
-for idx, sensor in enumerate(data): #For every sensor
-	print("************************************")
-	print("Currently working on sensor: " + str(idx))
-	print("************************************")
-	for i in range(0, len(sensor)): #For every event in a sensor
-		for j in range(i+1, len(sensor)): #For every other event in a sensor (permutation)
-			if (sensor[i][1] < timeSelection and sensor[i][2] > timeSelection): #If first compared is parked during timeSelection
-				if (sensor[j][1] < timeSelection and sensor[j][2] > timeSelection): #If second compared is parked during timeSelection
-					print(intersectionPercentage(sensor[i][3], sensor[j][3])) #Display the percentage of overlap
+with open("overlapMatrix.csv", "w+") as output:
+	output.write("car1, car2\n")
+	##output.write(overlapMatrix[0])
+	for idx, sensor in enumerate(data): #For every sensor
+		print("************************************")
+		print("Currently working on sensor: " + str(idx))
+		print("************************************")
+		for i in range(0, len(sensor)): #For every event in a sensor
+			for j in range(i+1, len(sensor)): #For every other event in a sensor (permutation)
+				if (sensor[i][1] < timeSelection and sensor[i][2] > timeSelection): #If first compared is parked during timeSelection
+					if (sensor[j][1] < timeSelection and sensor[j][2] > timeSelection): #If second compared is parked during timeSelection
+						if (intersectionPercentage(sensor[i][3], sensor[j][3]) > .20):
+							#print("Overlap: " +  sensor[i][0] + " " + sensor[j][0])
+							#overlapMatrix[0].append(sensor[i][0]  + "," +  sensor[j][0])
+							output.write(sensor[i][0] + "," + sensor[j][0] + "\n")
+
+
+
 
 
 
