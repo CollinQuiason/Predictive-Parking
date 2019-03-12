@@ -3,7 +3,12 @@ from datetime import datetime, timedelta
 from shapely.geometry import Polygon
 
 data = [] #[sensor][event#][data {UUID, start_time, end_time, Polygon_object}]
-timeSelection = datetime.strptime('2018-08-23 23:54:29', '%Y-%m-%d %H:%M:%S')  ##Calculate intersections at second (All events from timeSelection to timselection + 1 second)
+#timeSelection = datetime.strptime('2018-08-23 23:54:29', '%Y-%m-%d %H:%M:%S')  ##Calculate intersections at second (All events from timeSelection to timselection + 1 second)
+#timeSelection = datetime.strptime('2018-11-9 4:54:29', '%Y-%m-%d %H:%M:%S')  ##Fri Nov 09 2018 04:54:29 GMT-0600 (Central Standard Time)
+#maxParkingTime = timedelta(hours = 10)
+#minParkingStart = timeSelection - maxParkingTime
+#maxParkingEnd = timeSelection + maxParkingTime
+
 print("Reading in values from \'cleanedParking.csv\'...")
 parking = pandas.read_csv('cleanedParking.csv')
 print(list(parking))
@@ -24,28 +29,22 @@ def quickSort(alist): #IMPORTANT: EXPECTS 2 DIMENSIONAL EVENTS ARRAY (array corr
 
 def quickSortHelper(alist,first,last):
    if first<last:
-
        splitpoint = partition(alist,first,last)
-
        quickSortHelper(alist,first,splitpoint-1)
        quickSortHelper(alist,splitpoint+1,last)
 
 
 def partition(alist,first,last):
    pivotvalue = alist[first][1]
-
    leftmark = first+1
    rightmark = last
-
    done = False
-   while not done:
 
+   while not done:
        while leftmark <= rightmark and alist[leftmark][1] <= pivotvalue:
            leftmark = leftmark + 1
-
        while alist[rightmark][1] >= pivotvalue and rightmark >= leftmark:
            rightmark = rightmark -1
-
        if rightmark < leftmark:
            done = True
        else:
@@ -56,15 +55,20 @@ def partition(alist,first,last):
    temp = alist[first]
    alist[first] = alist[rightmark]
    alist[rightmark] = temp
-
    return rightmark
 
 def intersectionPercentage(shape1, shape2):
 	intersection = shape1.intersection(shape2)
 	return intersection.area/shape1.area
 
+#TODO:
+def findEvent(arr, time):
+	idx = -1
+	return idx
+
 for i in range(0, 24): #Fixing size of first dimension (Sensor ID)
 	data.append([])
+
 
 print("Organizing data...")
 for i, row in parking.iterrows(): #For each row in the CSV file
@@ -94,26 +98,42 @@ for event in data[1]:
 
 overlapMatrix.append([])
 
+total1 = 0
+
 print("Calculating intersections...")
-with open("overlapMatrix.csv", "w+") as output:
-	output.write("car1, car2\n")
-	##output.write(overlapMatrix[0])
-	for idx, sensor in enumerate(data): #For every sensor
-		print("************************************")
-		print("Currently working on sensor: " + str(idx))
-		print("************************************")
-		for i in range(0, len(sensor)): #For every event in a sensor
-			for j in range(i+1, len(sensor)): #For every other event in a sensor (permutation)
-				if (sensor[i][1] < timeSelection and sensor[i][2] > timeSelection): #If first compared is parked during timeSelection
-					if (sensor[j][1] < timeSelection and sensor[j][2] > timeSelection): #If second compared is parked during timeSelection
-						if (intersectionPercentage(sensor[i][3], sensor[j][3]) > .20):
-							#print("Overlap: " +  sensor[i][0] + " " + sensor[j][0])
-							#overlapMatrix[0].append(sensor[i][0]  + "," +  sensor[j][0])
-							output.write(sensor[i][0] + "," + sensor[j][0] + "\n")
 
 
 
+timeSelection = datetime.strptime('2018-08-10 23:33:26', '%Y-%m-%d %H:%M:%S')
+maxDataTime = datetime.strptime('2018-11-26 15:52:31', '%Y-%m-%d %H:%M:%S')
+timedelt = int((maxDataTime - timeSelection).total_seconds())
+processinterval = 60 #seconds between overlap processing
+
+with open("overlapmatrix.txt", "w+") as output:
+	for tdelta in range(0, int(timedelt/processinterval)):
+		timeSelection = timeSelection + timedelta(seconds = processinterval)
+		output.write("*" + str(timeSelection) + "\n")
+		if (tdelta % 10 == 0):
+			print(timeSelection)
+		for idx, sensor in enumerate(data): #For every sensor
+			#print("************************************")
+			#print("Currently working on sensor: " + str(idx))
+			#print("************************************")
+			#for i in range(minstartidx, len(sensor)): 
+			for i in range(0, len(sensor)): 
+				if (sensor[i][1] > timeSelection):
+					#print("i is greater than time selection - breaking")
+					break
+
+				if (sensor[i][2] > timeSelection):
+					for j in range(i+1, len(sensor)): 
+						if (sensor[j][1] > timeSelection):
+							#print("j is greater than time selection - breaking")
+							break
+						if (sensor[j][2] > timeSelection):
+							
+							if (intersectionPercentage(sensor[i][3], sensor[j][3]) > .20):
+								total1 += 1
+								output.write("	"+sensor[i][0] + "," + sensor[j][0] + "\n")
 
 
-
- 
