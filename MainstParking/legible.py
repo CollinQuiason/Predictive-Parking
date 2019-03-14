@@ -26,4 +26,4 @@ parking.geometry = parking.geometry.str.replace(']', '')
 
 
 #Output csv
-parking.to_csv('cleanedParking.csv', sep=',', encoding='utf-8', index = False)
+parking.to_csv('legibleParking.csv', sep=',', encoding='utf-8', index = False)
