@@ -32,8 +32,8 @@ WILL NOT LOAD WITHOUT BEING RAN ON A SERVER
 
 ## **What are the files in '/MainstParking'?**
 
-Go to 'comparisons' folder in the google drive for a visual representation
-https://drive.google.com/open?id=1l5e0cedqhZ6vFgRs59fUuYP5gJd62d8m
+Go to 'comparisons' folder in the [Google Drive](https://drive.google.com/open?id=1l5e0cedqhZ6vFgRs59fUuYP5gJd62d8m) for a visual representation
+
 
 
 Flow:
@@ -53,5 +53,7 @@ Flow:
 
 
 legible.py: Cleans the data's format (string manipulation)
+
 collisions.py: produces a matrix of collision events > 20%
+
 clean.py: uses the overlaps to produce a new version of the data with 10% removal bias.
