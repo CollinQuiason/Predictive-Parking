@@ -37,11 +37,17 @@ https://drive.google.com/open?id=1l5e0cedqhZ6vFgRs59fUuYP5gJd62d8m
 
 
 Flow:	sensity_events.csv 	--------->	legibleParking.csv --------->	cleanedParking.csv
+
 							legible.py 						clean.py
+
 	                       						 |               ^
+
 	                       			collisions.py|				 |
+
 	                       						 V 				 |
+
 	                       					overlapmatrix.txt ----
+	                       					
 
 
 legible.py: Cleans the data's format (string manipulation)
