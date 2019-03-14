@@ -40,7 +40,7 @@ Flow:
 
         sensity_events.csv  --------->  legibleParking.csv  --------->  cleanedParking.csv
 
-                            legible.py                      clean.py
+                            legible.py           |          clean.py
 
                                                  |               ^
 
