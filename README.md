@@ -36,7 +36,8 @@ Go to 'comparisons' folder in the google drive for a visual representation
 https://drive.google.com/open?id=1l5e0cedqhZ6vFgRs59fUuYP5gJd62d8m
 
 
-Flow:	sensity_events.csv 	--------->	legibleParking.csv --------->	cleanedParking.csv
+Flow:
+		sensity_events.csv  --------->	legibleParking.csv  --------->	cleanedParking.csv
 
 							legible.py 						clean.py
 
@@ -47,7 +48,7 @@ Flow:	sensity_events.csv 	--------->	legibleParking.csv --------->	cleanedParkin
 	                       						 V 				 |
 
 	                       					overlapmatrix.txt ----
-	                       					
+
 
 
 legible.py: Cleans the data's format (string manipulation)
