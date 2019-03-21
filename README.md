@@ -38,7 +38,7 @@ Go to 'comparisons' folder in the [Google Drive](https://drive.google.com/open?i
 
 Flow:
 
-        sensity_events.csv  --------->  legibleParking.csv  --------->  cleanedParking.csv
+        sensity_events.csv  --------->  legibleParking.csv  --------->  cleanedParking.csv & formatted_cleanedParking.csv
 
                             legible.py           |          clean.py
 
@@ -56,4 +56,5 @@ legible.py: Cleans the data's format (string manipulation)
 
 collisions.py: produces a matrix of collision events > 20%
 
-clean.py: uses the overlaps to produce a new version of the data with 10% removal bias.
+clean.py: uses the overlaps to produce a new version of the data with X% removal bias (currently 0, or 100% removal of overlaps > 20%).
+		Also creates a version in the same format as the original sensity_events.csv data

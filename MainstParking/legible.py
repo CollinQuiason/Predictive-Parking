@@ -3,6 +3,9 @@ import pandas
 #Read in csv
 parking = pandas.read_csv('sensity_events.csv')
 
+print(parking.columns)
+print(parking.iloc(1))
+quit()
 #Drop 'session_type' column because value was always car
 parking.drop('session_type', axis = 1, inplace = True)
 #Drop rows with null end time/date
