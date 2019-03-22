@@ -38,9 +38,9 @@ Go to 'comparisons' folder in the [Google Drive](https://drive.google.com/open?i
 
 Flow:
 
-        sensity_events.csv  --------->  legibleParking.csv  --------->  cleanedParking.csv & formatted_cleanedParking.csv
+        sensity_events.csv  --------->  legibleParking.csv  --------->  cleanedParking.csv & formatted_cleanedParking.csv --------------------> sensorInformation.csv
 
-                            legible.py           |          clean.py
+                            legible.py           |          clean.py                                                       findSensorBounds.py
 
                                                  |               ^
 
