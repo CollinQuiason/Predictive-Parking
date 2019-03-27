@@ -33,7 +33,7 @@ const options = {
 
 //Called before HTML5 canvas loads
 function preload(){
-    data = loadTable('/MainstParking/cleanedParking.csv', 'csv', 'header');
+    data = loadTable('/KansasCityData/cleanedParking.csv', 'csv', 'header');
     //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 

@@ -30,7 +30,7 @@ WILL NOT LOAD WITHOUT BEING RAN ON A SERVER
 
 ---------------------------------------------------------------------------------------------------
 
-## **What are the files in '/MainstParking'?**
+## **What are the files in '/KansasCityData/'?**
 
 Go to 'comparisons' folder in the [Google Drive](https://drive.google.com/open?id=1l5e0cedqhZ6vFgRs59fUuYP5gJd62d8m) for a visual representation
 
