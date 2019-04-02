@@ -116,22 +116,14 @@ with open("overlapmatrix.txt", "w+") as output:
 		if (tdelta % 10 == 0):
 			print(timeSelection)
 		for idx, sensor in enumerate(data): #For every sensor
-			#print("************************************")
-			#print("Currently working on sensor: " + str(idx))
-			#print("************************************")
-			#for i in range(minstartidx, len(sensor)): 
 			for i in range(0, len(sensor)): 
 				if (sensor[i][1] > timeSelection):
-					#print("i is greater than time selection - breaking")
 					break
-
 				if (sensor[i][2] > timeSelection):
 					for j in range(i+1, len(sensor)): 
 						if (sensor[j][1] > timeSelection):
-							#print("j is greater than time selection - breaking")
 							break
 						if (sensor[j][2] > timeSelection):
-							
 							if (intersectionPercentage(sensor[i][3], sensor[j][3]) > .20):
 								total1 += 1
 								output.write("	"+sensor[i][0] + "," + sensor[j][0] + "\n")

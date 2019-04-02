@@ -12,6 +12,8 @@ var mappa;
 var parkingEvents = [];
 let data;
 let pos;
+maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
+predictions = [23];
 
 
 
@@ -28,12 +30,16 @@ const options = {
 
 //Called before HTML5 canvas loads
 function preload(){
-    data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
+   
     //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 
 //Called after HTML5 canvas loads
 function setup(){
+  data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
+  predictions[13] = loadTable('/KansasCityData/TimeSeries_Sensor14.csv', 'csv', 'header');
+
+
   //Canvas setup
   h = window.innerHeight;
   w = window.innerWidth;
@@ -63,9 +69,6 @@ function drawSensors(){
   //For each sensor
   for (var i = 0; i < data.getRowCount(); i++){
 
-    //Parking Prediction for sensor: 'i'
-    var availability = Math.random();
-    var availabilityRGB = [255*availability, 255*(1-availability), 0];
     //Centroid
     var centX = parseFloat(data.getRow(i).getString('centroidX'));
     var centY = parseFloat(data.getRow(i).getString('centroidY'));
@@ -79,6 +82,10 @@ function drawSensors(){
     //Draw the ellipse
     if (centX != 0 || centY != 0){ //If the sensor contains parking data
 
+      //Parking Prediction for sensor: 'i'
+      //var availability = Math.random();
+      availability = parseFloat(predictions[13].getRow(1).getString('no_of_cars'))/maxparking[13]; 
+      var availabilityRGB = [255*availability, 255*(1-availability), 0];
       //Convert lat/longitude to pixels on the screen
       var centroid = areaMap.latLngToPixel(centY, centX); //TODO change csv file so that these aren't reverse X and Y
       var maxCoord = areaMap.latLngToPixel(maxY, maxX);
@@ -117,7 +124,9 @@ function drawSensors(){
   }
 }
 
+function tick(){
 
+}
 
 
 //Adaptively resize window
