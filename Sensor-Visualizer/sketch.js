@@ -31,21 +31,20 @@ const options = {
 
 //Called before HTML5 canvas loads
 function preload(){
-   
+   data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
+  predictions[13] = loadTable('/KansasCityData/TimeSeries_Sensor14.csv', 'csv', 'header');
     //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 
 //Called after HTML5 canvas loads
 function setup(){
-  data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
-  predictions[13] = loadTable('/KansasCityData/TimeSeries_Sensor14.csv', 'csv', 'header');
+  
 
 
   //Canvas setup
   h = window.innerHeight;
   w = window.innerWidth;
   canvas = createCanvas(w, h);
-  thecount = 0;
   //API Call(s)
   //mappa = new Mappa('Google', 'AIzaSyAjAzuR4SDDwDHTaEbdWmtrgeDQvm3HUdQ');
   mappa = new Mappa('MapboxGL', 'pk.eyJ1IjoiY3lmdXJpeCIsImEiOiJjanNpaXQ2NnAwa2ZiM3lyN3A1YmZiNm1jIn0.w1r76syKPFLN-qsnp7Tmkw');
@@ -53,14 +52,15 @@ function setup(){
   //Initialize map
   areaMap = mappa.tileMap(options);
   areaMap.overlay(canvas);
-  areaMap.onChange(drawSensors);
+  //areaMap.onChange(drawSensors);
 
 
 }
 
 //Called every frame
 function draw(){
-
+  print(thecount);
+  drawSensors();
 }
 
 function drawSensors(){
