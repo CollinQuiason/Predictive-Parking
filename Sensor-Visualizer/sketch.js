@@ -12,8 +12,9 @@ var mappa;
 var parkingEvents = [];
 let data;
 let pos;
-maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
-predictions = [23];
+var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
+var predictions = [23];
+var thecount = 0;
 
 
 
@@ -44,7 +45,7 @@ function setup(){
   h = window.innerHeight;
   w = window.innerWidth;
   canvas = createCanvas(w, h);
-  
+  thecount = 0;
   //API Call(s)
   //mappa = new Mappa('Google', 'AIzaSyAjAzuR4SDDwDHTaEbdWmtrgeDQvm3HUdQ');
   mappa = new Mappa('MapboxGL', 'pk.eyJ1IjoiY3lmdXJpeCIsImEiOiJjanNpaXQ2NnAwa2ZiM3lyN3A1YmZiNm1jIn0.w1r76syKPFLN-qsnp7Tmkw');
@@ -59,7 +60,6 @@ function setup(){
 
 //Called every frame
 function draw(){
-  
 
 }
 
@@ -84,7 +84,8 @@ function drawSensors(){
 
       //Parking Prediction for sensor: 'i'
       //var availability = Math.random();
-      availability = parseFloat(predictions[13].getRow(1).getString('no_of_cars'))/maxparking[13]; 
+      print(thecount);
+      var availability = parseFloat(predictions[13].getRow(thecount).getString('no_of_cars'))/maxparking[13]; 
       var availabilityRGB = [255*availability, 255*(1-availability), 0];
       //Convert lat/longitude to pixels on the screen
       var centroid = areaMap.latLngToPixel(centY, centX); //TODO change csv file so that these aren't reverse X and Y
@@ -122,6 +123,8 @@ function drawSensors(){
       //console.log("Sensor number: -" + i + "- is null. No parking data for that sensor.");
     }
   }
+  thecount += 1;
+  thecount %= predictions[13].getRowCount();
 }
 
 function tick(){
