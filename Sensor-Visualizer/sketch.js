@@ -10,6 +10,7 @@
 //Data
 var mappa;
 var parkingEvents = [];
+var allSensors = [];
 let data;
 let pos;
 var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
@@ -64,6 +65,28 @@ function setup(){
     minX[i] = parseFloat(data.getRow(i).getString('minX'));
     minY[i] = parseFloat(data.getRow(i).getString('minY'));
 
+
+
+  allSensors.push(new Set([0]));
+  allSensors.push(new Set([1]));
+  allSensors.push(new Set([3]));
+  allSensors.push(new Set([4]));
+  allSensors.push(new Set([5]));
+  allSensors.push(new Set([6]));
+  allSensors.push(new Set([7]));
+  allSensors.push(new Set([8]));
+  allSensors.push(new Set([9]));
+  allSensors.push(new Set([10]));
+  allSensors.push(new Set([11]));
+  allSensors.push(new Set([13]));
+  allSensors.push(new Set([14]));
+  allSensors.push(new Set([16]));
+  allSensors.push(new Set([17]));
+  allSensors.push(new Set([18]));
+  allSensors.push(new Set([20]));
+  allSensors.push(new Set([11]));
+  allSensors.push(new Set([22]));
+
 }
   //frameRate(15);
 
@@ -93,6 +116,8 @@ function draw(){
 function drawSensors(){
   clear();//Otherwise it looks like a crashing windows program where each frame doesn't clear
   var clusters = [];
+
+
   var centroid = [nSensors];
   var maxCoord = [nSensors];
   var minCoord = [nSensors];
@@ -162,10 +187,28 @@ function drawSensors(){
     i+=1;
   }
 
+  for (var cluster of clusters){
+    noStroke();
+    fill(availabilityRGB[0], availabilityRGB[1], availabilityRGB[2], 110);
+    beginShape();
+    for (var sensor of cluster){
+      
+      
+
+      curveVertex(minCoord[sensor].x, minCoord[sensor].y);
+      curveVertex(maxCoord[sensor].x, minCoord[sensor].y);
+      curveVertex(maxCoord[sensor].x, maxCoord[sensor].y);
+      curveVertex(minCoord[sensor].x, maxCoord[sensor].y);
+      curveVertex(minCoord[sensor].x, minCoord[sensor].y);
+      curveVertex(maxCoord[sensor].x, minCoord[sensor].y);
 
 
+      
+    }
+    endShape(CLOSE);
+  }
 
-
+/*
   for (var i = 0; i < nSensors; i++){
     if (centX[i] != 0 || centY[i] != 0){
       noStroke();
@@ -183,12 +226,21 @@ function drawSensors(){
       endShape(CLOSE);
     }
   }
+*/
+
+
+
+
+
+
+
+
 
   thecount += 1;
   thecount %= predictions[13].getRowCount();
 
 
-  console.log(clusters);
+  //console.log(clusters);
 }
 
 function polygonNearPolygon(minCoords1, maxCoords1, minCoords2, maxCoords2, pixels){
