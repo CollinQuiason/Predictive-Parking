@@ -128,10 +128,13 @@ function drawSensors(){
     }
   }
   //console.log(maxCoord[10].x);
+  fill(255);
   for (var i = 0; i < nSensors - 1; i++){
     if (centX[i] != 0 || centY[i] != 0){
       for (var j = i + 1; j < nSensors; j++){
         if (centX[j] != 0 || centY[j] != 0){
+
+          text(str(i), centroid[i].x, centroid[i].y);
           if (polygonNearPolygon(minCoord[i], maxCoord[i], minCoord[j], maxCoord[j], pixelMarginThreshold)) //Check for clustering conditions
           {
             //console.log(i + " " + j + " coords: " + maxCoord[i].x + " " + maxCoord[j].x);
@@ -139,13 +142,13 @@ function drawSensors(){
             var centroidmedian = {};
             centroidmedian.x = (centroid[i].x + centroid[j].x) /2;
             centroidmedian.y = (centroid[i].y + centroid[j].y) /2;
-            fill(0, 0, 255);
-            circle(centroidmedian.x, centroidmedian.y, 5);
-            fill(255);
+            //fill(0, 0, 255);
+            //circle(centroidmedian.x, centroidmedian.y, 5);
+            //fill(255);
             //circle(centroid[i].x, centroid[i].y, 3);
             //circle(centroid[j].x, centroid[j].y, 3);
-            text(str(i), centroid[i].x, centroid[i].y);
-            text(str(j), centroid[j].x, centroid[j].y);
+            
+            //text(str(j), centroid[j].x, centroid[j].y);
           }
         }
       }
