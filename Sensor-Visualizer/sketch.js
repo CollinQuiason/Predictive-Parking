@@ -10,7 +10,6 @@
 //Data
 var mappa;
 var parkingEvents = [];
-var allSensors = [];
 let data;
 let pos;
 var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
@@ -67,25 +66,7 @@ function setup(){
 
 
 
-  allSensors.push(new Set([0]));
-  allSensors.push(new Set([1]));
-  allSensors.push(new Set([3]));
-  allSensors.push(new Set([4]));
-  allSensors.push(new Set([5]));
-  allSensors.push(new Set([6]));
-  allSensors.push(new Set([7]));
-  allSensors.push(new Set([8]));
-  allSensors.push(new Set([9]));
-  allSensors.push(new Set([10]));
-  allSensors.push(new Set([11]));
-  allSensors.push(new Set([13]));
-  allSensors.push(new Set([14]));
-  allSensors.push(new Set([16]));
-  allSensors.push(new Set([17]));
-  allSensors.push(new Set([18]));
-  allSensors.push(new Set([20]));
-  allSensors.push(new Set([11]));
-  allSensors.push(new Set([22]));
+
 
 }
   //frameRate(15);
@@ -186,27 +167,71 @@ function drawSensors(){
     }
     i+=1;
   }
+  //console.log(clusters[0]);
 
+
+
+  var allSensors = new Set([0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 22]);
   for (var cluster of clusters){
+
+    
+
+
+
+
+    
     noStroke();
     fill(availabilityRGB[0], availabilityRGB[1], availabilityRGB[2], 110);
-    beginShape();
-    for (var sensor of cluster){
-      
-      
+    var clusterSensorIterator = cluster.values();
+    var initial = clusterSensorIterator.next().value;
+    clustervertices = {
+      minx: minCoord[initial].x,
+      maxx: maxCoord[initial].x,
+      miny: minCoord[initial].y,
+      maxy: maxCoord[initial].y,
+    };
 
-      curveVertex(minCoord[sensor].x, minCoord[sensor].y);
-      curveVertex(maxCoord[sensor].x, minCoord[sensor].y);
-      curveVertex(maxCoord[sensor].x, maxCoord[sensor].y);
-      curveVertex(minCoord[sensor].x, maxCoord[sensor].y);
-      curveVertex(minCoord[sensor].x, minCoord[sensor].y);
-      curveVertex(maxCoord[sensor].x, minCoord[sensor].y);
-
-
-      
+    for (var i = 1; i < cluster.size; i++){
+      var current = clusterSensorIterator.next().value;
+      allSensors.delete(current);
+      if (minCoord[current].x < clustervertices.minx){
+        clustervertices.minx = minCoord[current].x;
+      }
+      if (maxCoord[current].x > clustervertices.maxx){
+        clustervertices.maxx = maxCoord[current].x;
+      }
+      if (minCoord[current].y < clustervertices.miny){
+        clustervertices.miny = minCoord[current].y;
+      }
+      if (maxCoord[current].y > clustervertices.maxy){
+        clustervertices.maxy = maxCoord[current].y;
+      }
     }
+    beginShape();
+    curveVertex(clustervertices.minx, clustervertices.miny); //Draw clusters
+    curveVertex(clustervertices.minx, clustervertices.maxy);
+    curveVertex(clustervertices.maxx, clustervertices.maxy);
+    curveVertex(clustervertices.maxx, clustervertices.miny);
+    curveVertex(clustervertices.minx, clustervertices.miny);
+    curveVertex(clustervertices.minx, clustervertices.maxy);
     endShape(CLOSE);
   }
+
+
+
+  var nonClusteredSensors = allSensors.values();
+  for (var i = 0; i < allSensors.size; i++){
+    var currentSensor = nonClusteredSensors.next().value;
+    beginShape();
+    curveVertex(minCoord[currentSensor].x, minCoord[currentSensor].y);//Draw remaining sensors that are not in clusters
+    curveVertex(maxCoord[currentSensor].x, minCoord[currentSensor].y);
+    curveVertex(maxCoord[currentSensor].x, maxCoord[currentSensor].y);
+    curveVertex(minCoord[currentSensor].x, maxCoord[currentSensor].y);
+    curveVertex(minCoord[currentSensor].x, minCoord[currentSensor].y);
+    curveVertex(maxCoord[currentSensor].x, minCoord[currentSensor].y);
+    endShape(CLOSE);
+  }
+  
 
 /*
   for (var i = 0; i < nSensors; i++){
