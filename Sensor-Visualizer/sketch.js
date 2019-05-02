@@ -17,7 +17,7 @@ var predictions = [23];
 var thecount = 0;
 var nSensors;
 var centX, centY, maxX, maxY, minX, minY;
-var pixelMarginThreshold = 50; //Maximum pixels required to merge sensor predictions visually
+var pixelMarginThreshold = 100; //Maximum pixels required to merge sensor predictions visually
 
 
 
@@ -92,6 +92,7 @@ function draw(){
 
 function drawSensors(){
   clear();//Otherwise it looks like a crashing windows program where each frame doesn't clear
+  var clusters = [];
   var centroid = [nSensors];
   var maxCoord = [nSensors];
   var minCoord = [nSensors];
@@ -125,29 +126,45 @@ function drawSensors(){
     if (centX[i] != 0 || centY[i] != 0){
       for (var j = i + 1; j < nSensors; j++){
         if (centX[j] != 0 || centY[j] != 0){
-          if (Math.abs(maxCoord[i].x - maxCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].y - maxCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].x - maxCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].y - maxCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].x - maxCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].y - maxCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].x - maxCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].y - maxCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].x - minCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].y - minCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].x - minCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].y - minCoord[j].x) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].x - minCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(maxCoord[i].y - minCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].x - minCoord[j].y) <= pixelMarginThreshold ||
-                Math.abs(minCoord[i].y - minCoord[j].y) <= pixelMarginThreshold
-                ){
-            console.log(i + " " + j);
+          if (polygonNearPolygon(minCoord[i], maxCoord[i], minCoord[j], maxCoord[j], pixelMarginThreshold)) //Check for clustering conditions
+          {
+            //console.log(i + " " + j + " coords: " + maxCoord[i].x + " " + maxCoord[j].x);
+            clusters.push(new Set([i, j]));
+            var centroidmedian = {};
+            centroidmedian.x = (centroid[i].x + centroid[j].x) /2;
+            centroidmedian.y = (centroid[i].y + centroid[j].y) /2;
+            fill(0, 0, 255);
+            circle(centroidmedian.x, centroidmedian.y, 5);
+            fill(255);
+            //circle(centroid[i].x, centroid[i].y, 3);
+            //circle(centroid[j].x, centroid[j].y, 3);
+            text(str(i), centroid[i].x, centroid[i].y);
+            text(str(j), centroid[j].x, centroid[j].y);
           }
+        }
       }
+    }
+  }
+
+  var i = 0;
+  while (i < clusters.length){
+    var j = i + 1;
+    while (j < clusters.length){
+      if (hasIntersection(clusters[i], clusters[j])){
+        clusters[j].forEach(clusters[i].add, clusters[i])
+        clusters.splice(j, 1);
+
       }
+      else{
+        j+=1;
+      }
+    }
+    i+=1;
   }
-  }
+
+
+
+
 
   for (var i = 0; i < nSensors; i++){
     if (centX[i] != 0 || centY[i] != 0){
@@ -169,11 +186,37 @@ function drawSensors(){
 
   thecount += 1;
   thecount %= predictions[13].getRowCount();
+
+
+  console.log(clusters);
 }
 
-function tick(){
+function polygonNearPolygon(minCoords1, maxCoords1, minCoords2, maxCoords2, pixels){
+  if (Math.abs(minCoords1.x - minCoords2.x) < pixels || Math.abs((maxCoords1.x - maxCoords2.x) < pixels)){  //If the left or right X values are close
+    if (Math.abs(minCoords1.y - minCoords2.y) < pixels){                                                    //Check every combination of y values
+      return true;}
+    if (Math.abs(minCoords1.y - maxCoords2.y) < pixels){
+      return true;}
+    if (Math.abs(maxCoords1.y - minCoords2.y) < pixels){
+      return true;}
+    if (Math.abs(maxCoords1.y - maxCoords2.y) < pixels){
+      return true;}}
+
+  if (Math.abs(minCoords1.y - minCoords2.y) < pixels || Math.abs((maxCoords1.y - maxCoords2.y) < pixels)){  //If the left or right y values are close
+    if (Math.abs(minCoords1.x - minCoords2.x) < pixels){                                                    //Check every combination of x values
+      return true;}
+    if (Math.abs(minCoords1.x - maxCoords2.x) < pixels){
+      return true;}
+    if (Math.abs(maxCoords1.x - minCoords2.x) < pixels){
+      return true;}
+    if (Math.abs(maxCoords1.x - maxCoords2.x) < pixels){
+      return true;}}
+
+
+  return false; //If none found
 
 }
+
 //Adaptively resize window
 function windowResized() {
   //TODO: resize map as well
@@ -181,4 +224,16 @@ function windowResized() {
     h = window.innerHeight;
     resizeCanvas(w, h);
 
+}
+
+function hasIntersection(set1, set2){
+  for (var x of set1){
+    if (set2.has(x)){
+      //console.log("overlap");
+      return true;
+      
+    }
+  }
+  //console.log("no");
+  return false;
 }
