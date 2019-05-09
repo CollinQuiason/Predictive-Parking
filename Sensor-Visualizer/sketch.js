@@ -14,11 +14,15 @@ let data;
 let pos;
 var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
 var predictions = [23];
-var thecount = 0;
+var thecount = 1;
 var nSensors;
 var centX, centY, maxX, maxY, minX, minY;
 var pixelMarginThreshold = 100; //Maximum pixels required to merge sensor predictions visually
-
+var framecount = 0;
+var nFramesPerTransition = 30;
+var availability1;
+var availability2;
+var availabilityRGB = [];
 
 
 //Mappa API configuration
@@ -35,7 +39,7 @@ const options = {
 //Called before HTML5 canvas loads
 function preload(){
   data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
-  predictions[13] = loadTable('/KansasCityData/TimeSeries_Sensor14.csv', 'csv', 'header');
+  predictions[13] = loadTable('/KansasCityData/Hourly_Averages.csv', 'csv', 'header');
     //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 
@@ -64,7 +68,7 @@ function setup(){
     minX[i] = parseFloat(data.getRow(i).getString('minX'));
     minY[i] = parseFloat(data.getRow(i).getString('minY'));
 
-
+    availability2 = parseFloat(predictions[13].getRow(0).getString('Hourly_Averages'))/maxparking[13];
 
 
 
@@ -91,7 +95,10 @@ function setup(){
 function draw(){
   //console.log(thecount);
   //console.log(frameRate());
+  
   drawSensors();
+  framecount += 1;
+  framecount %= nFramesPerTransition;
 }
 
 function drawSensors(){
@@ -103,15 +110,34 @@ function drawSensors(){
   var maxCoord = [nSensors];
   var minCoord = [nSensors];
   //For each sensor
+  textSize(32);
+  fill(255);
+  text('Hour: T+' + thecount, width/10, height/10);
+  textSize(12);
+  
 
   for (var i = 0; i < nSensors; i++){
 
     //Draw the ellipse
     if (centX[i] != 0 || centY[i] != 0){ //If the sensor contains parking data
 
-
-      var availability = parseFloat(predictions[13].getRow(thecount).getString('no_of_cars'))/maxparking[13]; 
-      var availabilityRGB = [255*availability, 255*(1-availability), 0];
+      var transitionavailability
+      if (framecount % nFramesPerTransition == 0 && i == 0){ //Upon having  multiple sensors - remove && i=0, then make availability1 and 2 arrays and substitute i in for the index
+        availability1 = availability2;
+        availability2 = parseFloat(predictions[13].getRow(thecount).getString('Hourly_Averages'))/maxparking[13];
+        thecount += 1;
+        thecount %= predictions[13].getRowCount();
+        
+      }
+      if (availability1 < availability2){
+        transitionavailability = availability1 + framecount * ((availability2-availability1)/nFramesPerTransition);
+        }
+      else{
+        transitionavailability = availability1 - framecount * ((availability1-availability2)/nFramesPerTransition);
+      }
+      //console.log(availability1-availability2);
+      availabilityRGB = [255*transitionavailability, 255*(1-transitionavailability), 0];
+      
       //Convert lat/longitude to pixels on the screen
       centroid[i] = areaMap.latLngToPixel(centY[i], centX[i]); //TODO change csv file so that these aren't reverse X and Y
       maxCoord[i] = areaMap.latLngToPixel(maxY[i], maxX[i]);
@@ -127,6 +153,7 @@ function drawSensors(){
       //console.log("Sensor number: -" + i + "- is null. No parking data for that sensor.");
     }
   }
+  
   //console.log(maxCoord[10].x);
   fill(255);
   for (var i = 0; i < nSensors - 1; i++){
@@ -264,8 +291,7 @@ function drawSensors(){
 
 
 
-  thecount += 1;
-  thecount %= predictions[13].getRowCount();
+
 
 
   //console.log(clusters);
