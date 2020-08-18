@@ -18,12 +18,12 @@ for i in sensorcsv.no_of_cars:
 	if (count % nframes == 0):
 		averages.append(total/nframes)
 		total = 0
-	
+
 	count %= nframes
 
 
 
-outputdata = pandas.DataFrame({"Hourly_Averages": averages})
+outputdata = pandas.DataFrame({"Hourly_Averages": averages}) #TODO: {Sensor-Visualizer Time Display} Add a column for the time
 
 outputdata.to_csv('Hourly_Averages.csv', sep=',')
 

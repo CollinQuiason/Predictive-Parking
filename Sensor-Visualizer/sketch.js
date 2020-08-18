@@ -79,6 +79,7 @@ function setup(){
   h = window.innerHeight;
   w = window.innerWidth;
   canvas = createCanvas(w, h);
+
   //API Call(s)
   //mappa = new Mappa('Google', 'AIzaSyAjAzuR4SDDwDHTaEbdWmtrgeDQvm3HUdQ');
   mappa = new Mappa('MapboxGL', 'pk.eyJ1IjoiY3lmdXJpeCIsImEiOiJjanNpaXQ2NnAwa2ZiM3lyN3A1YmZiNm1jIn0.w1r76syKPFLN-qsnp7Tmkw');
@@ -95,7 +96,7 @@ function setup(){
 function draw(){
   //console.log(thecount);
   //console.log(frameRate());
-  
+  drawLegend();
   drawSensors();
   framecount += 1;
   framecount %= nFramesPerTransition;
@@ -112,9 +113,9 @@ function drawSensors(){
   //For each sensor
   textSize(32);
   fill(255);
-  text('Hour: T+' + thecount, width/10, height/10);
+  text('Hour: T+' + thecount, width/10, height/10); //TODO: {Sensor-Visualizer Time Display} Display the time from CSV
   textSize(12);
-  
+
 
   for (var i = 0; i < nSensors; i++){
 
@@ -127,7 +128,7 @@ function drawSensors(){
         availability2 = parseFloat(predictions[13].getRow(thecount).getString('Hourly_Averages'))/maxparking[13];
         thecount += 1;
         thecount %= predictions[13].getRowCount();
-        
+
       }
       if (availability1 < availability2){
         transitionavailability = availability1 + framecount * ((availability2-availability1)/nFramesPerTransition);
@@ -137,7 +138,7 @@ function drawSensors(){
       }
       //console.log(availability1-availability2);
       availabilityRGB = [255*transitionavailability, 255*(1-transitionavailability), 0];
-      
+
       //Convert lat/longitude to pixels on the screen
       centroid[i] = areaMap.latLngToPixel(centY[i], centX[i]); //TODO change csv file so that these aren't reverse X and Y
       maxCoord[i] = areaMap.latLngToPixel(maxY[i], maxX[i]);
@@ -153,7 +154,7 @@ function drawSensors(){
       //console.log("Sensor number: -" + i + "- is null. No parking data for that sensor.");
     }
   }
-  
+
   //console.log(maxCoord[10].x);
   fill(255);
   for (var i = 0; i < nSensors - 1; i++){
@@ -174,7 +175,7 @@ function drawSensors(){
             //fill(255);
             //circle(centroid[i].x, centroid[i].y, 3);
             //circle(centroid[j].x, centroid[j].y, 3);
-            
+
             //text(str(j), centroid[j].x, centroid[j].y);
           }
         }
@@ -204,12 +205,12 @@ function drawSensors(){
   var allSensors = new Set([0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 22]);
   for (var cluster of clusters){
 
-    
 
 
 
 
-    
+
+
     noStroke();
     fill(availabilityRGB[0], availabilityRGB[1], availabilityRGB[2], 110);
     var clusterSensorIterator = cluster.values();
@@ -261,7 +262,7 @@ function drawSensors(){
     curveVertex(maxCoord[currentSensor].x, minCoord[currentSensor].y);
     endShape(CLOSE);
   }
-  
+
 
 /*
   for (var i = 0; i < nSensors; i++){
@@ -283,39 +284,32 @@ function drawSensors(){
   }
 */
 
-
-
-
-
-
-
-
-
-
-
-
   //console.log(clusters);
 }
 
-function polygonNearPolygon(minCoords1, maxCoords1, minCoords2, maxCoords2, pixels){
-  if (Math.abs(minCoords1.x - minCoords2.x) < pixels || Math.abs((maxCoords1.x - maxCoords2.x) < pixels)){  //If the left or right X values are close
-    if (Math.abs(minCoords1.y - minCoords2.y) < pixels){                                                    //Check every combination of y values
+function drawLegend() {
+  //TODO
+}
+
+function polygonNearPolygon(minCoords1, maxCoords1, minCoords2, maxCoords2, nPixelsCutoff){
+  if (Math.abs(minCoords1.x - minCoords2.x) < nPixelsCutoff || Math.abs((maxCoords1.x - maxCoords2.x) < nPixelsCutoff)){  //If the left or right X values are close
+    if (Math.abs(minCoords1.y - minCoords2.y) < nPixelsCutoff){                                                    //Check every combination of y values
       return true;}
-    if (Math.abs(minCoords1.y - maxCoords2.y) < pixels){
+    if (Math.abs(minCoords1.y - maxCoords2.y) < nPixelsCutoff){
       return true;}
-    if (Math.abs(maxCoords1.y - minCoords2.y) < pixels){
+    if (Math.abs(maxCoords1.y - minCoords2.y) < nPixelsCutoff){
       return true;}
-    if (Math.abs(maxCoords1.y - maxCoords2.y) < pixels){
+    if (Math.abs(maxCoords1.y - maxCoords2.y) < nPixelsCutoff){
       return true;}}
 
-  if (Math.abs(minCoords1.y - minCoords2.y) < pixels || Math.abs((maxCoords1.y - maxCoords2.y) < pixels)){  //If the left or right y values are close
-    if (Math.abs(minCoords1.x - minCoords2.x) < pixels){                                                    //Check every combination of x values
+  if (Math.abs(minCoords1.y - minCoords2.y) < nPixelsCutoff || Math.abs((maxCoords1.y - maxCoords2.y) < nPixelsCutoff)){  //If the left or right y values are close
+    if (Math.abs(minCoords1.x - minCoords2.x) < nPixelsCutoff){                                                    //Check every combination of x values
       return true;}
-    if (Math.abs(minCoords1.x - maxCoords2.x) < pixels){
+    if (Math.abs(minCoords1.x - maxCoords2.x) < nPixelsCutoff){
       return true;}
-    if (Math.abs(maxCoords1.x - minCoords2.x) < pixels){
+    if (Math.abs(maxCoords1.x - minCoords2.x) < nPixelsCutoff){
       return true;}
-    if (Math.abs(maxCoords1.x - maxCoords2.x) < pixels){
+    if (Math.abs(maxCoords1.x - maxCoords2.x) < nPixelsCutoff){
       return true;}}
 
 
@@ -337,9 +331,10 @@ function hasIntersection(set1, set2){
     if (set2.has(x)){
       //console.log("overlap");
       return true;
-      
+
     }
   }
-  //console.log("no");
   return false;
 }
+
+
