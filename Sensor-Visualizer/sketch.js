@@ -13,7 +13,7 @@ var parkingEvents = [];
 let data;
 let pos;
 var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
-var predictions = [23];
+var sensors_forecast_matrix = [23];
 var thecount = 1;
 var nSensors;
 var centX, centY, maxX, maxY, minX, minY;
@@ -39,7 +39,8 @@ const options = {
 //Called before HTML5 canvas loads
 function preload() {
     data = loadTable('/KansasCityData/sensorInformation.csv', 'csv', 'header');
-    predictions[13] = loadTable('/KansasCityData/Hourly_Averages.csv', 'csv', 'header');
+    sensors_forecast_matrix[13] = loadTable('/KansasCityData/Hourly_Averages.csv', 'csv', 'header');
+    //This "13" is the sensor-number
     //TODO: Sort via 'start_time' (Might be pre-processed)
 }
 
@@ -68,7 +69,7 @@ function setup() {
         minX[i] = parseFloat(data.getRow(i).getString('minX'));
         minY[i] = parseFloat(data.getRow(i).getString('minY'));
 
-        availability2 = parseFloat(predictions[13].getRow(0).getString('Hourly_Averages')) / maxparking[13];
+        availability2 = parseFloat(sensors_forecast_matrix[13].getRow(0).getString('Hourly_Averages')) / maxparking[13];
 
 
     }
@@ -87,22 +88,18 @@ function setup() {
     areaMap = mappa.tileMap(options);
     areaMap.overlay(canvas);
     //areaMap.onChange(drawSensors);
-
-
 }
 
 //Called every frame
 function draw() {
-    //console.log(thecount);
-    //console.log(frameRate());
-    drawLegend();
+    clear();//Otherwise it looks like a crashing windows program where each frame doesn't clear
     drawSensors();
+    drawLegend();
     framecount += 1;
     framecount %= nFramesPerTransition;
 }
 
 function drawSensors() {
-    clear();//Otherwise it looks like a crashing windows program where each frame doesn't clear
     var clusters = [];
 
 
@@ -112,7 +109,13 @@ function drawSensors() {
     //For each sensor
     textSize(32);
     fill(255);
-    text('Hour: T+' + thecount, width / 10, height / 10); //TODO: {Sensor-Visualizer Time Display} Display the time from CSV
+    var date = new Date(Date.parse(sensors_forecast_matrix[13].getRow(thecount).getString('Hours')));
+    date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
+    date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
+    textAlign(LEFT, TOP)
+    text(date.toDateString() + ", " + date.toLocaleTimeString(), 30, 50);
+    textAlign(RIGHT, BOTTOM);
+    text('Hour: T+' + thecount, width-30, height-50);
     textSize(12);
 
 
@@ -124,9 +127,9 @@ function drawSensors() {
             var transitionavailability
             if (framecount % nFramesPerTransition == 0 && i == 0) { //Upon having  multiple sensors - remove && i=0, then make availability1 and 2 arrays and substitute i in for the index
                 availability1 = availability2;
-                availability2 = parseFloat(predictions[13].getRow(thecount).getString('Hourly_Averages')) / maxparking[13];
+                availability2 = parseFloat(sensors_forecast_matrix[13].getRow(thecount).getString('Hourly_Averages')) / maxparking[13];
                 thecount += 1;
-                thecount %= predictions[13].getRowCount();
+                thecount %= sensors_forecast_matrix[13].getRowCount();
 
             }
             if (availability1 < availability2) {
@@ -196,7 +199,7 @@ function drawSensors() {
     }
     //console.log(clusters[0]);
 
-
+[]
     var allSensors = new Set([0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 22]);
     for (var cluster of clusters) {
 
@@ -277,7 +280,37 @@ function drawSensors() {
 }
 
 function drawLegend() {
-    //TODO
+    //Visual Key Text
+    fill(255);
+    let nLegends = 5.0; //(Legends - 1) to account for arrays starting at 0
+    textAlign(RIGHT);
+
+    text('Complete availability', width - 45, height / 2 - 175);
+    text('Great availability', width - 45, height / 2 - 135);
+    text('Good availability', width - 45, height / 2 - 95);
+    text('Some availability', width - 45, height / 2 - 55);
+    text('Minimal availability', width - 45, height / 2 - 15);
+    text('No availability', width - 45, height / 2 + 25);
+
+
+    let availability = nLegends/nLegends; // 1
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2 - 200, 40); //Complete availability
+    availability = 4/nLegends;
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2 - 160, 40); //Great availability
+    availability = 3/nLegends;
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2 - 120, 40); //Good availability
+    availability = 2/nLegends;
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2 - 80, 40); //Some availability
+    availability = 1/nLegends;
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2 - 40, 40); //Minimal Availability
+    availability = 0/nLegends;
+    fill((1-availability) * 255, availability * 255, 0, 110);
+    square(width - 40, height / 2, 40); //No availability
 }
 
 function polygonNearPolygon(minCoords1, maxCoords1, minCoords2, maxCoords2, nPixelsCutoff) {

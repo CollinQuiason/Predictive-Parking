@@ -1,8 +1,9 @@
 import pandas
 
-nframes = 12 #Corresponds to averaging 1 hour worth of data
+nframes = 12 #Corresponds to bins per hour IE: 5 minutes = 12
 
 sensorcsv = pandas.read_csv('TimeSeries_Sensor14.csv')
+
 
 
 
@@ -22,8 +23,15 @@ for i in sensorcsv.no_of_cars:
 	count %= nframes
 
 
+hours = []
+count = 0
+for i in sensorcsv.start_time:
+	count += 1
+	if (count % nframes == 0):
+		hours.append(i)
+	count %= nframes
 
-outputdata = pandas.DataFrame({"Hourly_Averages": averages}) #TODO: {Sensor-Visualizer Time Display} Add a column for the time
+outputdata = pandas.DataFrame({"Hourly_Averages": averages, "Hours: ": hours})
 
 outputdata.to_csv('Hourly_Averages.csv', sep=',')
 
