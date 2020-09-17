@@ -1,5 +1,5 @@
 # Parking Data
-Analysis, cleaning, and visualization of data used for research leveraging AI/ML to predict parking availability 
+Analysis, cleaning, and visualization of data used for and produced by research leveraging AI/ML to predict parking availability 
 
 Parking Availability Forecasting Model - https://ieeexplore.ieee.org/document/9071688
 
