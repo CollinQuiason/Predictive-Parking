@@ -1,4 +1,7 @@
-# PredictiveParking
+# Parking Data
+Analysis, cleaning, and visualization of data used for research regarding AI/ML for the purpose of  
+
+Parking Availability Forecasting Model - https://ieeexplore.ieee.org/document/9071688
 
 ---------------------------------------------------------------------------------------------------
 
@@ -26,7 +29,7 @@ Slider located on top left for changing transparency (Updated visualization on m
 
 ##  **NOTES/WARNINGS:**
 
-WILL NOT LOAD WITHOUT BEING RAN ON A SERVER
+WILL NOT LOAD WITHOUT BEING RUN ON A SERVER
 
 ---------------------------------------------------------------------------------------------------
 
@@ -52,9 +55,9 @@ Flow:
 
 
 
-legible.py: Cleans the data's format (string manipulation)
+legible.py: Cleans the data's format (just string manipulation)
 
-collisions.py: produces a matrix of collision events > 20%
+collisions.py: produces a matrix of collision events > 20% overlap
 
 clean.py: uses the overlaps to produce a new version of the data with X% removal bias (currently 0, or 100% removal of overlaps > 20%).
 		Also creates a version in the same format as the original sensity_events.csv data
