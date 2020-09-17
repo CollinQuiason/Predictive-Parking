@@ -14,7 +14,7 @@ let data;
 let pos;
 var maxparking = [10, 9, 0, 7, 5, 11, 11, 17, 20, 11, 8, 8, 0, 15, 4, 0, 1, 8, 4, 0, 4, 9, 12]; //Index = sensor# - 1
 var sensors_forecast_matrix = [23];
-var thecount = 1;
+var nForecastBins;
 var nSensors;
 var centX, centY, maxX, maxY, minX, minY;
 var pixelMarginThreshold = 100; //Maximum pixels required to merge sensor predictions visually
@@ -24,6 +24,12 @@ var availability1;
 var availability2;
 var availabilityRGB = [];
 
+//UI Parameters
+let isPaused = false;
+
+//UI Components
+let timeSlider;
+let pauseButton;
 
 //Mappa API configuration
 const options = {
@@ -46,6 +52,9 @@ function preload() {
 
 //Called after HTML5 canvas loads
 function setup() {
+
+    //Get n data
+    nForecastBins = sensors_forecast_matrix[13].getRowCount();
 
     //Get all sensor bounds
 
@@ -88,6 +97,29 @@ function setup() {
     areaMap = mappa.tileMap(options);
     areaMap.overlay(canvas);
     //areaMap.onChange(drawSensors);
+
+
+
+    //User Interface
+    timeSlider = createSlider(0, nForecastBins, 0, 1);
+    timeSlider.position(width/2, 65, 'fixed');
+    timeSlider.center('horizontal');
+    timeSlider.style('z-index', 1);
+
+    pauseButton = createButton('Pause');
+    pauseButton.mousePressed(changePause);
+    pauseButton.position(width/2, 100, 'fixed');
+    pauseButton.center('horizontal');
+    pauseButton.style('z-index', 1);
+
+}
+function changePause() {
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseButton.html('Resume');
+    } else {
+        pauseButton.html('Pause');
+    }
 }
 
 //Called every frame
@@ -109,13 +141,13 @@ function drawSensors() {
     //For each sensor
     textSize(32);
     fill(255);
-    var date = new Date(Date.parse(sensors_forecast_matrix[13].getRow(thecount).getString('Hours')));
+    var date = new Date(Date.parse(sensors_forecast_matrix[13].getRow(timeSlider.value()).getString('Hours')));
     date.setHours(date.getHours() + Math.round(date.getMinutes()/60));
     date.setMinutes(0, 0, 0); // Resets also seconds and milliseconds
-    textAlign(LEFT, TOP)
-    text(date.toDateString() + ", " + date.toLocaleTimeString(), 30, 50);
+    textAlign(CENTER, TOP)
+    text(date.toDateString() + ", " + date.toLocaleTimeString(), width/2, 10);
     textAlign(RIGHT, BOTTOM);
-    text('Hour: T+' + thecount, width-30, height-50);
+    text('Hour: T+' + timeSlider.value(), width-30, height-50);
     textSize(12);
 
 
@@ -127,10 +159,15 @@ function drawSensors() {
             var transitionavailability
             if (framecount % nFramesPerTransition == 0 && i == 0) { //Upon having  multiple sensors - remove && i=0, then make availability1 and 2 arrays and substitute i in for the index
                 availability1 = availability2;
-                availability2 = parseFloat(sensors_forecast_matrix[13].getRow(thecount).getString('Hourly_Averages')) / maxparking[13];
-                thecount += 1;
-                thecount %= sensors_forecast_matrix[13].getRowCount();
-
+                // if (something has the value) {
+                //     availability2 = thatsomething;
+                // } else {
+                    availability2 = parseFloat(sensors_forecast_matrix[13].getRow(timeSlider.value()).getString('Hourly_Averages')) / maxparking[13];
+                // }
+                if (!isPaused){
+                    timeSlider.value((timeSlider.value() + 1) % nForecastBins);
+                }
+                console.log(timeSlider.value());
             }
             if (availability1 < availability2) {
                 transitionavailability = availability1 + framecount * ((availability2 - availability1) / nFramesPerTransition);
@@ -199,7 +236,6 @@ function drawSensors() {
     }
     //console.log(clusters[0]);
 
-[]
     var allSensors = new Set([0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 16, 17, 18, 20, 21, 22]);
     for (var cluster of clusters) {
 
@@ -368,5 +404,4 @@ function hasIntersection(set1, set2) {
     }
     return false;
 }
-
 

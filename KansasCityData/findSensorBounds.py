@@ -1,6 +1,6 @@
 import pandas
 
-
+#TODO: Calculate area of sensor bounds so that it can be used to weigh each sensor's availability as it clusters with other sensors
 parking = pandas.read_csv("cleanedParking.csv")
 events = []
 
@@ -27,7 +27,7 @@ class parkingEvent:
 	def __str__(self):
 		return '--------\nGeometry: \n[' + str(self.geometry[0]) + ', ' + str(self.geometry[1]) + '], \n[' + str(self.geometry[2]) + ', ' + str(self.geometry[3]) + '], \n[' + str(self.geometry[4]) + ', ' + str(self.geometry[5]) + '], \n[' + str(self.geometry[6]) + ', ' + str(self.geometry[7]) +  ']\nSensor: ' + str(self.sensor) + '\nCenter: ' + str(self.centerX) + ', ' + str(self.centerY) + '\n Min X: ' + str(self.minX)
 	def calculateMinMaxs(self):
-		 
+
 		for i in range(2, len(self.geometry), 2): #Start at index 2 because values were initialized to first entires already in __init__
 			if (float(self.geometry[i]) > self.maxX):
 				self.maxX = float(self.geometry[i])
@@ -45,7 +45,7 @@ class parkingEvent:
 			totalX += float(self.geometry[i])
 			totalY += float(self.geometry[i+1])
 		self.centerX = totalX/4
-		self.centerY = totalY/4 #returns 23 element array of the x and y coordinates 
+		self.centerY = totalY/4 #returns 23 element array of the x and y coordinates
 
 def calculateSensorCentroids(allevents): #'events' must be an eight element array.  X & Y of each corner of a polygon
 	centroids = []
